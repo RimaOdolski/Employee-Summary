@@ -2,17 +2,19 @@ const Manager = require("./lib/Manager");
 const Engineer = require("./lib/Engineer");
 const Intern = require("./lib/Intern");
 const inquirer = require("inquirer");
-const render = require("./lib/htmlRenderer");
+  
 
-//const fs = require("fs");
-//const OUTPUT_DIR = path.resolve(__dirname, "output")
-//const outputPath = path.join(OUTPUT_DIR, "team.html");
+const path = require("path");
+const fs = require("fs");
+const ManagerHtml = require("./templates/manager");
+const EngineerHtml = require("./templates/engineer");
+const InternHtml = require("./templates/intern");
+const mainHtml = require("./templates/main");
 
-let team = {
-    manager: undefined,
-    intern: [],
-    engineer: []
-}
+
+let team = [];
+
+
 
 function createManager() {
 
@@ -39,7 +41,8 @@ function createManager() {
         },
 
     ]).then(function (answer) {
-        team.manager = new Manager(answer.name, parseInt(answer.id), answer.email, parseInt(answer.office));
+        const manager = new Manager(answer.name, parseInt(answer.id), answer.email, parseInt(answer.office));
+        team.push(manager);
         addTeamMember();
     });
 
@@ -65,7 +68,7 @@ function addTeamMember() {
             createIntern();
         }
         if (answer.type=== "I don't want to add any more team members"){
-         render(team);
+         generateHtml ();
         }
     });
 }
@@ -97,8 +100,10 @@ function createEngineer() {
         }
 
     ]).then(function (answer) {
-        team.engineer.push(new Engineer(answer.name, parseInt(answer.id), answer.email, answer.github));
+       const engineer = new Engineer(answer.name, parseInt(answer.id), answer.email, answer.github);
+       team.push(engineer);
         addTeamMember();
+
     });
 }
 
@@ -127,9 +132,41 @@ function createIntern() {
         }
 
     ]).then(function (answer) {
-        team.intern.push(new Intern(answer.name, parseInt(answer.id), answer.email, answer.school));
+        const intern = new Intern(answer.name, parseInt(answer.id), answer.email, answer.school)     ;
+        team.push(intern);
         addTeamMember();
     });
 }
+
+
+const generateHtml = () => { 
+    let html = "";
+    for (let i = 0; i < team.length; i++) {
+
+        if (team[i].getRole() === "Manager") {
+            html += ManagerHtml(team[i]);
+        } else if (team[i].getRole() === "Engineer") {
+            html += EngineerHtml(team[i]);
+        } else if (team[i].getRole() === "Intern") {
+            html += InternHtml(team[i]);
+        }
+    } //generating the index file, inserts the teams
+    fs.writeFile("./index.html", mainHtml(html), function (err) {
+        if (err) {
+            
+            console.log(err);
+        } 
+        console.log("success");
+    })
+}
 createManager();
+
+
+
+
+
+
+
+
+
 
