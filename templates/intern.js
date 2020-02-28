@@ -9,7 +9,7 @@ function intern (data){
             <ul class="list-group">
                 <li class="list-group-item">ID: ${data.id}</li>
                 <li class="list-group-item">Email: <a href="mailto:${data.email}">${data.email}</a></li>
-                <li class="list-group-item">College: ${data.college}</li>
+                <li class="list-group-item">College: ${data.school}</li>
             </ul>
         </div>
     </div>
